@@ -24,6 +24,7 @@ type
     FRunning: Boolean;
     FFontList: TList<zglPFont>;
 
+    procedure LoadAssets;
     procedure Initialize;
     procedure InitializeFonts;
   public
@@ -40,7 +41,7 @@ implementation
 { Global: Functions / Procedures }
 procedure OnInit;
 begin
-  Main.InitializeFonts;
+  Main.LoadAssets;
 end;
 
 procedure OnUpdate(dt: Double);
@@ -90,10 +91,8 @@ procedure TMain.FormClose(Sender: TObject; var Action: TCloseAction);
 var
   I: Integer;
 begin
-  for I := 0 in FFontList.Count-1 do
-  begin
-    FFontList[I]
-  end;
+  for I := 0 to FFontList.Count-1 do
+    font_Del(FFontList[I]);
 
   FreeAndNil(FFontList);
 
@@ -107,6 +106,11 @@ begin
 end;
 
 procedure TMain.InitializeFonts;
+begin
+
+end;
+
+procedure TMain.LoadAssets;
 begin
 
 end;
