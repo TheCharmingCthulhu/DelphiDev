@@ -1,0 +1,25 @@
+=================================
+=== ZenGL 0.3.12 (2013.08.12) ===
+=================================
+[00000000ms] Begin
+[00000002ms] Current mode: 1920 x 1080
+[00000758ms] wglChoosePixelFormatARB: zDepth = 24; stencil = 0; fsaa = 0
+[00000827ms] GL_VERSION: 4.5.13416 Compatibility Profile Context 15.300.1025.1001
+[00000827ms] GL_RENDERER: AMD Radeon R9 200 Series
+[00000829ms] GL_MAX_TEXTURE_SIZE: 16384
+[00000829ms] GL_EXT_TEXTURE_COMPRESSION_S3TC: TRUE
+[00000829ms] GL_SGIS_GENERATE_MIPMAP: TRUE
+[00000829ms] GL_MAX_TEXTURE_UNITS_ARB: 8
+[00000829ms] GL_EXT_TEXTURE_FILTER_ANISOTROPIC: TRUE
+[00000829ms] GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: 16
+[00000829ms] GL_EXT_BLEND_FUNC_SEPARATE: TRUE
+[00000829ms] GL_MAX_RENDERBUFFER_SIZE: 16384
+[00000829ms] GL_EXT_FRAMEBUFFER_OBJECT: TRUE
+[00000829ms] WGL_PBUFFER: TRUE
+[00000829ms] Support WaitVSync: TRUE
+[00000830ms] Ogg: Error while loading libraries: libogg-0.dll, libvorbis-0.dll, libvorbisfile-3.dll
+[00000831ms] Theora: Error while loading library: libtheoradec-1.dll
+[00003856ms] Average FPS: 12606
+[00003856ms] Timers to free: 1
+[00003856ms] Textures to free: 1
+[00003874ms] End
