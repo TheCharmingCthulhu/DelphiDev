@@ -6,70 +6,129 @@ uses
   SysUtils, Variants, Classes, Generics.Collections, Winapi.Windows;
 
 type
-  TAHKThread = function(AScript: PWideString; AOptions: PWideString; AParameters: PWideString): THandle; cdecl;
-  TAHKThreadReady = function: Integer; cdecl;
-  TAHKExecute = function(AScript: PWideString): Boolean; cdecl;
-  TAHKGetVar = function(AVariableName: PWideString; AType: LongWord): PWideString; cdecl;
+  TAHKThread = class;
 
+  TAHKFuncThread = function(AScript: PWideString; AOptions: PWideString; AParameters: PWideString): THandle; cdecl;
+  TAHKFuncThreadReady = function: Integer; cdecl;
+  TAHKFuncExecute = function(AScript: PWideString): Boolean; cdecl;
+  TAHKFuncGetVar = function(AVariableName: PWideString; AType: LongWord): PWideString; cdecl;
+  TAHKFuncSetVar = function(AVariableName: PWideString; AValue: String): Integer; cdecl;
+  
   TAHKManager = class
   private
     FHandle: THandle;
-    FThread: TAHKThread;
-    FThreadReady: TAHKThreadReady;
-    FExecute: TAHKExecute;
-    FGetVariable: TAHKGetVar;
-    function GetVariable(Name: String): String;
-    procedure SetVariable(Name: String; const Value: String);
   public
     constructor Create;
-    function Execute(AScript, AOptions, AParameters: String): Boolean; Overload;
-    function Execute(AScript: String): Boolean; Overload;
+    function NewThread: TAHKThread; Overload;
+    function NewThread(AScript: String; AOptions, AParameters: Array of String): TAHKThread; Overload;
     class var Instance: TAHKManager;
-
-    property Variables[Name: String]: String read GetVariable write SetVariable;
   end;
 
+  TAHKThread = class(TThread)
+  private
+    FThread: TAHKFuncThread;
+    FThreadReady: TAHKFuncThreadReady;
+    FExecute: TAHKFuncExecute;
+    FGetVariable: TAHKFuncGetVar;
+    FSetVariable: TAHKFuncSetVar;
+    FScript: String;
+    FOptions: TStringList;
+    FParameters: TStringList;
+    function GetVariable(Name: String): Variant;
+    procedure SetVariable(Name: String; const Value: Variant);
+  protected
+    procedure Execute; override;
+  public
+    function Run(AScript: String): Boolean;
+    
+    constructor Create(AHandle: NativeUInt; AScript: String; AOptions, AParameters: Array of String);
+    destructor Destroy; override;
+
+    property Variables[Name: String]: Variant read GetVariable write SetVariable;
+  end;
+  
 implementation
 
 { TAHKManager }
 
 constructor TAHKManager.Create;
-var
-  Text: String;
-  Data: PAnsiChar;
 begin
   FHandle:=LoadLibrary('AutoHotkey.dll');
-  if FHandle <> 0 then
-  begin
-    @FThread:=GetProcAddress(FHandle, 'ahkTextDll');
-    @FThreadReady:=GetProcAddress(FHandle, 'ahkReady');
-    @FExecute:=GetProcAddress(FHandle, 'ahkExec');
-    @FGetVariable:=GetProcAddress(FHandle, 'ahkGetVar');
+end;
+
+function TAHKManager.NewThread(AScript: String; AOptions, AParameters: Array of String): TAHKThread;
+begin
+  Result:=nil;
+
+  try
+    Result:=TAHKThread.Create(FHandle, AScript, AOptions, AParameters);
+  except
+    FreeAndNil(Result);
   end;
 end;
 
-function TAHKManager.Execute(AScript, AOptions, AParameters: String): Boolean;
-var
-  Handle: THandle;
-  X: Integer;
+function TAHKManager.NewThread: TAHKThread;
 begin
-  Handle:=0;
-  Handle:=FThread(nil, nil, nil);
-  if Handle <> 0 then
+  Result:=NewThread('', [], []);
+end;
+
+{ TAHKThread }
+
+constructor TAHKThread.Create(AHandle: NativeUInt; AScript: String; AOptions, AParameters: Array of String);
+var
+  Str: String;
+begin
+  inherited Create;
+
+  SetFreeOnTerminate(True);
+
+  if AHandle <> 0 then
   begin
-    if FThreadReady <> 0 then
+    @FThread:=GetProcAddress(AHandle, 'ahkTextDll');
+    @FThreadReady:=GetProcAddress(AHandle, 'ahkReady');
+    @FExecute:=GetProcAddress(AHandle, 'ahkExec');
+    @FGetVariable:=GetProcAddress(AHandle, 'ahkGetVar');
+    @FSetVariable:=GetProcAddress(AHandle, 'ahkAssign');
+  end;
+
+  FScript:=AScript;
+
+  FOptions:=TStringList.Create;
+  for Str in AOptions do
+    FOptions.Add(Str);
+
+  FParameters:=TStringList.Create;
+  for Str in AParameters do
+    FParameters.Add(Str);
+end;
+
+destructor TAHKThread.Destroy;
+begin
+  FreeAndNil(FParameters);
+  FreeAndNil(FOptions);
+  
+  inherited;
+end;
+
+procedure TAHKThread.Execute;
+begin
+  inherited;
+
+  if FThread(PWideString(FScript), PWideString(FOptions.Text), PWideString(FParameters.Text)) <> 0 then
+  begin
+    while FThreadReady <> 0 do
     begin
-      Result:=FExecute(PWideString(AScript));
+      // Running AHK Thread ;)
     end;
   end;
 end;
 
-function TAHKManager.Execute(AScript: String): Boolean;
+function TAHKThread.Run(AScript: String): Boolean;
 begin
-  Execute(AScript, '', '');
+  Result:=FExecute(PWideString(AScript));
 end;
 
-function TAHKManager.GetVariable(Name: String): String;
+function TAHKThread.GetVariable(Name: String): Variant;
 var
   Variable: PWideString;
 begin
@@ -78,10 +137,12 @@ begin
   Result:=Copy(String(Variable), 0, Pos(#0, String(Variable))-1);
 end;
 
-procedure TAHKManager.SetVariable(Name: String; const Value: String);
+procedure TAHKThread.SetVariable(Name: String; const Value: Variant);
 begin
-
+  if FSetVariable(PWideString(Name), VarToStr(Value)) <> 0 then
+     FSetVariable(PWideString(Name), '');
 end;
+
 
 initialization
   TAHKManager.Instance:=TAHKManager.Create;

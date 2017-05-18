@@ -9,19 +9,17 @@ uses
   AHKManager in 'Source\AHKManager.pas';
 
 var
-  I:Integer;
-  Data: String;
+  Thr, Thr2: TAHKThread;
 
 begin
   try
-
-    for I := 0 to 100 do
-    begin
-      TAHKManager.Instance.Execute('Dick:=10 + 5');
-      Data:=TAHKManager.Instance.Variables['Dick'];
-
-      WriteLn(Data);
-    end;
+    Thr:=TAHKManager.Instance.NewThread;
+//    Thr.Run('MsgBox Hello World');
+//    Thr.Variables['Test']:='LOL';
+//    WriteLn(Thr.Variables['Test']);
+//
+//    Thr2:=TAHKManager.Instance.CreateThread;
+//    Thr.Run('MsgBox %Test%');
 
     Readln;
   except
