@@ -1,0 +1,16 @@
+﻿[]
+Coordinates=97,70,60,33
+Visible=True
+
+[Label3]
+Coordinates=520,0,46,51
+
+[Label1]
+Coordinates=420,0,46,51
+
+[Label2]
+Coordinates=469,0,46,51
+
+[ListBox1]
+Coordinates=0,0,116,177
+

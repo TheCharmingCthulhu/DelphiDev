@@ -14,7 +14,9 @@ var
 begin
   try
     Thr:=TAHKManager.Instance.NewThread;
-//    Thr.Run('MsgBox Hello World');
+    Thr.Run('Test:=LOL');
+    Thr.Variable:='Test';
+//    Thr.Run('MsgBox %Test%');
 //    Thr.Variables['Test']:='LOL';
 //    WriteLn(Thr.Variables['Test']);
 //

@@ -1,0 +1,32 @@
+object FrameListbox: TFrameListbox
+  Size.Width = 320.000000000000000000
+  Size.Height = 240.000000000000000000
+  Size.PlatformDefault = False
+  object sbarScroll: TScrollBar
+    Align = Right
+    Locked = True
+    SmallChange = 0.000000000000000000
+    Orientation = Vertical
+    Position.X = 302.000000000000000000
+    Size.Width = 18.000000000000000000
+    Size.Height = 240.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    OnChange = sbarScrollChange
+  end
+  object lstItems: TListBox
+    Align = Client
+    Locked = True
+    Size.Width = 302.000000000000000000
+    Size.Height = 240.000000000000000000
+    Size.PlatformDefault = False
+    StyleLookup = 'transparentlistboxstyle'
+    TabOrder = 1
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 302.000000000000000000
+    Viewport.Height = 240.000000000000000000
+  end
+end
